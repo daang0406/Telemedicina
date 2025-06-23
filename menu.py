@@ -1,7 +1,6 @@
 import streamlit as st
 
-# Título principal
-st.title("Plataforma de trazabilidad de insumos médicos")
+st.title("Authentication")
 
-# Puedes agregar más elementos aquí según tus necesidades
-# Ejemplo: descripción, botones, formularios, etc.
+if st.button("Authenticate"):
+    st.login("google")
