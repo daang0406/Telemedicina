@@ -9,39 +9,29 @@ st.set_page_config(
     layout="centered"
 )
 
-# LOGIN SIMPLE CON EMAIL RESTRINGIDO
+# LOGIN CON GOOGLE OAUTH
 st.title("Bienvenidos a la Plataforma de Trazabilidad de Insumos Médicos")
 
-# Función de autenticación simple
-def check_authentication():
-    if 'authenticated' not in st.session_state:
-        st.session_state.authenticated = False
-    
-    if not st.session_state.authenticated:
-        email = st.text_input("Email:")
-        
-        if st.button("Iniciar Sesión"):
-            allowed_email = st.secrets["access"]["allowed_email"]
-            if email == allowed_email:
-                st.session_state.authenticated = True
-                st.session_state.user_email = email
-                st.rerun()
-            else:
-                st.error("🚫 Acceso denegado. Tu cuenta no está autorizada.")
-                st.info(f"📧 Cuenta utilizada: {email}")
-        return False
-    return True
+# Recuperar usuario autenticado y correo permitido desde secrets
+user = st.session_state.get("user")
+allowed_email = st.secrets["access"]["allowed_email"]
 
-# Verificar autenticación
-if not check_authentication():
+if not user:
+    st.write("Por favor, autentifíquese para continuar.")
+    if st.button("Iniciar Sesión con Google"):
+        st.login("google")
+    st.stop()
+
+email = user.get("email")
+if email != allowed_email:
+    st.error("🚫 Acceso denegado. Tu cuenta no está autorizada.")
+    st.info(f"📧 Cuenta utilizada: {email}")
+    if st.button("Cerrar sesión"):
+        st.logout()
     st.stop()
 
 # Acceso exitoso
 st.title("Plataforma de trazabilidad")
-
-if st.button("Cerrar sesión"):
-    st.session_state.authenticated = False
-    st.rerun()
 
 # Autenticación con Google Sheets
 info = st.secrets["google_service_account"]
@@ -49,7 +39,10 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapi
 credentials = Credentials.from_service_account_info(info, scopes=SCOPES)
 client = gspread.authorize(credentials)
 
-st.success(f"Sesión iniciada correctamente como: {st.session_state.user_email}")
+st.success(f"Sesión iniciada correctamente como: {email}")
+
+if st.button("Cerrar sesión"):
+    st.logout()
 
 # Aquí podrías mostrar más funcionalidades...
 # st.write(client.open_by_key("..."))
