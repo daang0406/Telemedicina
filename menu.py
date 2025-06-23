@@ -1,6 +1,11 @@
 import streamlit as st
 
-st.title("Authentication")
+# Título principal
+st.title("Bienvenidos a la Plataforma de Trazabilidad de Insumos Médicos")
 
-if st.button("Authenticate"):
+# Texto descriptivo (opcional)
+st.write("Por favor, autentifíquese para continuar.")
+
+# Botón de autenticación
+if st.button("Autenticar con Google"):
     st.login("google")
